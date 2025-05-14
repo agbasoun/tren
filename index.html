@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global AI Jobs Impact Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .red { color: #ef4444; }
+        .green { color: #10b981; }
+        .blue { color: #3b82f6; }
+        .purple { color: #8b5cf6; }
+        
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .bar {
+            margin: 1rem 0;
+        }
+        
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .bar-track {
+            background: #e5e5e5;
+            height: 30px;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            display: flex;
+            font-size: 0.8rem;
+        }
+        
+        .bar-displaced {
+            background: #ef4444;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+        }
+        
+        .bar-created {
+            background: #10b981;
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+        }
+        
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .country-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .country-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .country-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .country-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .continent-tag {
+            background: #e5e5e5;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+        
+        .country-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        h2 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .view-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .view-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #e5e5e5;
+            transition: background 0.2s;
+        }
+        
+        .view-button.active {
+            background: #4f46e5;
+            color: white;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .line-chart {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+        
+        .chart-area {
+            position: absolute;
+            top: 0;
+            left: 50px;
+            right: 0;
+            bottom: 40px;
+            border-left: 2px solid #ddd;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .chart-area svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 40px;
+            width: 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: right;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .x-axis {
+            position: absolute;
+            bottom: 0;
+            left: 50px;
+            right: 0;
+            height: 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-top: 5px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+            </svg>
+            <h1>Global AI Jobs Impact Tracker</h1>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="view-selector">
+            <button class="view-button active" onclick="showView('overview')">Overview</button>
+            <button class="view-button" onclick="showView('countries')">Countries</button>
+            <button class="view-button" onclick="showView('weekly')">Weekly Trends</button>
+        </div>
+        
+        <!-- Overview View -->
+        <div id="overview-view">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Jobs Displaced by AI</div>
+                    <div class="stat-value red">1,475,200</div>
+                    <div class="stat-label">Across 60 countries</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">New Jobs Created</div>
+                    <div class="stat-value green">1,018,300</div>
+                    <div class="stat-label">In AI-related fields</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Net Job Impact</div>
+                    <div class="stat-value blue">-456,900</div>
+                    <div class="stat-label">Overall change</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">AI Adoption Rate</div>
+                    <div class="stat-value purple">52.4%</div>
+                    <div class="stat-label">Global average</div>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <h2>Jobs Impact by Continent</h2>
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>Asia</span>
+                        <span>605,000 displaced / 410,000 created</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill">
+                            <div class="bar-displaced" style="width: 60%;">605k</div>
+                            <div class="bar-created" style="width: 40%;">410k</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>North America</span>
+                        <span>385,000 displaced / 238,000 created</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill">
+                            <div class="bar-displaced" style="width: 62%;">385k</div>
+                            <div class="bar-created" style="width: 38%;">238k</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>Europe</span>
+                        <span>315,000 displaced / 212,000 created</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill">
+                            <div class="bar-displaced" style="width: 60%;">315k</div>
+                            <div class="bar-created" style="width: 40%;">212k</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>South America</span>
+                        <span>92,000 displaced / 74,000 created</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill">
+                            <div class="bar-displaced" style="width: 55%;">92k</div>
+                            <div class="bar-created" style="width: 45%;">74k</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bar">
+                    <div class="bar-label">
+                        <span>Africa</span>
+                        <span>65,000 displaced / 84,000 created</span>
+                    </div>
+                    <div class="bar-track">
+                        <div class="bar-fill">
+                            <div class="bar-displaced" style="width: 44%;">65k</div>
+                            <div class="bar-created" style="width: 56%;">84k</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Countries View -->
+        <div id="countries-view" class="hidden">
+            <h2>AI Impact by Country</h2>
+            <div class="country-grid">
+                <div class="country-card" onclick="showCountryDetails('United States')">
+                    <div class="country-header">
+                        <div class="country-name">United States</div>
+                        <div class="continent-tag">North America</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="red" style="font-weight: bold;">-140,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">68%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="red" style="font-weight: bold;">-2.3%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="country-card" onclick="showCountryDetails('China')">
+                    <div class="country-header">
+                        <div class="country-name">China</div>
+                        <div class="continent-tag">Asia</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="red" style="font-weight: bold;">-240,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">72%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="red" style="font-weight: bold;">-3.5%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="country-card" onclick="showCountryDetails('India')">
+                    <div class="country-header">
+                        <div class="country-name">India</div>
+                        <div class="continent-tag">Asia</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="green" style="font-weight: bold;">+40,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">59%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="green" style="font-weight: bold;">+1.2%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="country-card" onclick="showCountryDetails('Germany')">
+                    <div class="country-header">
+                        <div class="country-name">Germany</div>
+                        <div class="continent-tag">Europe</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="red" style="font-weight: bold;">-30,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">64%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="red" style="font-weight: bold;">-0.8%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="country-card" onclick="showCountryDetails('United Kingdom')">
+                    <div class="country-header">
+                        <div class="country-name">United Kingdom</div>
+                        <div class="continent-tag">Europe</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="red" style="font-weight: bold;">-17,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">66%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="red" style="font-weight: bold;">-0.3%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="country-card" onclick="showCountryDetails('Brazil')">
+                    <div class="country-header">
+                        <div class="country-name">Brazil</div>
+                        <div class="continent-tag">South America</div>
+                    </div>
+                    <div class="country-stats">
+                        <div>
+                            <div style="color: #666;">Net Impact</div>
+                            <div class="red" style="font-weight: bold;">-6,000</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">AI Adoption</div>
+                            <div class="purple" style="font-weight: bold;">46%</div>
+                        </div>
+                        <div>
+                            <div style="color: #666;">Weekly Change</div>
+                            <div class="red" style="font-weight: bold;">-0.3%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Weekly Trends View -->
+        <div id="weekly-view" class="hidden">
+            <h2>Weekly Trends</h2>
+            
+            <div class="chart-container">
+                <h3>Net Jobs Impact Over Time</h3>
+                <div class="line-chart">
+                    <div class="y-axis">
+                        <div>-350k</div>
+                        <div>-380k</div>
+                        <div>-410k</div>
+                        <div>-440k</div>
+                        <div>-470k</div>
+                    </div>
+                    <div class="chart-area">
+                        <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+                            <polyline
+                                fill="none"
+                                stroke="#3b82f6"
+                                stroke-width="3"
+                                points="0,60 50,70 100,85 150,120 200,120 250,105 300,95 350,120 400,120"
+                            />
+                            <circle cx="0" cy="60" r="4" fill="#3b82f6"/>
+                            <circle cx="50" cy="70" r="4" fill="#3b82f6"/>
+                            <circle cx="100" cy="85" r="4" fill="#3b82f6"/>
+                            <circle cx="150" cy="120" r="4" fill="#3b82f6"/>
+                            <circle cx="200" cy="120" r="4" fill="#3b82f6"/>
+                            <circle cx="250" cy="105" r="4" fill="#3b82f6"/>
+                            <circle cx="300" cy="95" r="4" fill="#3b82f6"/>
+                            <circle cx="350" cy="120" r="4" fill="#3b82f6"/>
+                            <circle cx="400" cy="120" r="4" fill="#3b82f6"/>
+                        </svg>
+                    </div>
+                    <div class="x-axis">
+                        <div>Week 1</div>
+                        <div>Week 2</div>
+                        <div>Week 3</div>
+                        <div>Week 4</div>
+                        <div>Week 5</div>
+                        <div>Week 6</div>
+                        <div>Week 7</div>
+                        <div>Week 8</div>
+                        <div>Current</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; color: #666;">
+                    Net job displacement peaked at -470,000 in Week 5 and has stabilized around -460,000
+                </p>
+            </div>
+            
+            <div class="chart-container" style="margin-top: 2rem;">
+                <h3>Global AI Adoption Rate</h3>
+                <div class="line-chart">
+                    <div class="y-axis">
+                        <div>68%</div>
+                        <div>66%</div>
+                        <div>64%</div>
+                        <div>62%</div>
+                        <div>60%</div>
+                    </div>
+                    <div class="chart-area">
+                        <svg viewBox="0 0 400 200" preserveAspectRatio="none">
+                            <polyline
+                                fill="none"
+                                stroke="#8b5cf6"
+                                stroke-width="3"
+                                points="0,180 50,160 100,140 150,120 200,100 250,80 300,60 350,40 400,20"
+                            />
+                            <circle cx="0" cy="180" r="4" fill="#8b5cf6"/>
+                            <circle cx="50" cy="160" r="4" fill="#8b5cf6"/>
+                            <circle cx="100" cy="140" r="4" fill="#8b5cf6"/>
+                            <circle cx="150" cy="120" r="4" fill="#8b5cf6"/>
+                            <circle cx="200" cy="100" r="4" fill="#8b5cf6"/>
+                            <circle cx="250" cy="80" r="4" fill="#8b5cf6"/>
+                            <circle cx="300" cy="60" r="4" fill="#8b5cf6"/>
+                            <circle cx="350" cy="40" r="4" fill="#8b5cf6"/>
+                            <circle cx="400" cy="20" r="4" fill="#8b5cf6"/>
+                        </svg>
+                    </div>
+                    <div class="x-axis">
+                        <div>Week 1</div>
+                        <div>Week 2</div>
+                        <div>Week 3</div>
+                        <div>Week 4</div>
+                        <div>Week 5</div>
+                        <div>Week 6</div>
+                        <div>Week 7</div>
+                        <div>Week 8</div>
+                        <div>Current</div>
+                    </div>
+                </div>
+                <p style="text-align: center; margin-top: 1rem; color: #666;">
+                    AI adoption has grown steadily from 60% to 68% over the past 8 weeks
+                </p>
+            </div>
+            
+            <div class="stats-grid" style="margin-top: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-label">Average Weekly Change</div>
+                    <div class="stat-value red">-12,500</div>
+                    <div class="stat-label">Jobs per week</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">AI Adoption Growth</div>
+                    <div class="stat-value purple">+1%</div>
+                    <div class="stat-label">Per week average</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Trend Direction</div>
+                    <div class="stat-value blue">Stabilizing</div>
+                    <div class="stat-label">Last 3 weeks</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p>© 2025 AI Jobs Impact Tracker | Data for illustrative purposes only</p>
+        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #aaa;">Weekly updates every Sunday</p>
+    </footer>
+    
+    <script>
+        function showView(viewName) {
+            // Hide all views
+            document.getElementById('overview-view').classList.add('hidden');
+            document.getElementById('countries-view').classList.add('hidden');
+            document.getElementById('weekly-view').classList.add('hidden');
+            
+            // Show selected view
+            document.getElementById(viewName + '-view').classList.remove('hidden');
+            
+            // Update button states
+            document.querySelectorAll('.view-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function showCountryDetails(countryName) {
+            alert(`Detailed view for ${countryName} - Feature coming soon!`);
+        }
+    </script>
+</body>
+</html>
